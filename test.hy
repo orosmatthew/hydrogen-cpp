@@ -1,1 +1,1 @@
-return 2;
+exit 100;
