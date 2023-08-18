@@ -1,0 +1,17 @@
+---
+BasedOnStyle: WebKit
+AlignAfterOpenBracket: AlwaysBreak
+BinPackParameters: false
+BinPackArguments: false
+AllowAllParametersOfDeclarationOnNextLine: true
+NamespaceIndentation: None
+BreakBeforeBraces: Stroustrup
+ColumnLimit: 120
+PenaltyReturnTypeOnItsOwnLine: 200
+PenaltyIndentedWhitespace: 1
+PointerAlignment: Left
+AllowShortFunctionsOnASingleLine: None
+AlwaysBreakTemplateDeclarations: Yes
+AlignConsecutiveMacros: None
+AlignEscapedNewlines: DontAlign
+...
