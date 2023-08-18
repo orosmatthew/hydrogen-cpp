@@ -1,65 +1,108 @@
+#include "../include/errors.h"
 #include <fstream>
 #include <iostream>
 #include <optional>
 #include <sstream>
 #include <vector>
-#include "../include/errors.h"
 
 enum class TokenType { _return, int_lit, semi };
 
 struct Token {
     TokenType type;
-    std::optional<std::string> value{};
+    std::optional<std::string> value {};
 };
 
-std::vector<Token> tokenize(const std::string& str)
+const std::string KEYWORDS[] = { "return" };
+
+std::string make_tokenword(std::string str)
+{
+    std::string tokenword;
+    for (char c : str) {
+        if (!std::isspace(c)) {
+            tokenword += c;
+        }
+        else {
+            break;
+        }
+    }
+    return tokenword;
+}
+
+std::string make_tokenint(std::string str)
+{
+    std::string tokenint;
+    for (char c : str) {
+        if (std::isdigit(c)) {
+            tokenint += c;
+        }
+        else {
+            break;
+        }
+    }
+    return tokenint;
+}
+
+bool is_keyword(const std::string& str)
+{
+    for (const std::string& keyword : KEYWORDS) {
+        if (str == keyword) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Token get_keyword_token(const std::string& str)
+{
+    if (str == "return") {
+        return Token { TokenType::_return };
+    }
+
+    std::cerr << "INTERNAL ERROR: get_keyword_token() called with invalid keyword '" << str << "'" << std::endl;
+    exit(EXIT_FAILURE);
+}
+
+std::vector<Token> tokenize(const std::string& str, const char* filename)
 {
     std::vector<Token> tokens;
     std::string buf;
-    for (int i = 0; i < str.length(); i++)
-    {
-        char c = str.at(i);
-        if (std::isalpha(c))
-        {
-            buf.push_back(c);
-            i++;
-            while (std::isalnum(str.at(i)))
-            {
-                buf.push_back(str.at(i));
-                i++;
+    size_t pos = 0;
+    size_t line = 1;
+    while (pos < str.size()) {
+        if (std::isspace(str.at(pos))) {
+            pos++;
+            continue;
+        }
+        else if (std::isalpha(str.at(pos))) {
+            buf = make_tokenword(str.substr(pos));
+            pos += buf.size();
+            if (is_keyword(buf)) {
+                tokens.push_back(get_keyword_token(buf));
             }
-            i--;
-            if (buf == "return")
-            {
-                tokens.push_back({.type = TokenType::_return});
-                buf.clear();
-                continue;
-            } else
-            {
-                std::cerr << "You messed up!" << std::endl;
+            else {
+                std::cerr << filename << ":" << line << ":" << pos - buf.size() << ": ERROR: unexpected identifier '"
+                          << buf << "'" << std::endl;
+                std::cerr << err::caret_to_line(str, pos, line, buf.size()) << std::endl;
                 exit(EXIT_FAILURE);
             }
-        } else if (std::isdigit(c))
-        {
-            buf.push_back(c);
-            i++;
-            while (std::isdigit(str.at(i)))
-            {
-                buf.push_back(str.at(i));
-                i++;
-            }
-            i--;
-            tokens.push_back({.type = TokenType::int_lit, .value = buf});
-            buf.clear();
-        } else if (c == ';')
-        {
-            tokens.push_back({.type = TokenType::semi});
-        } else if (std::isspace(c))
-        {
-            continue;
-        } else
-        {
-            std::cerr << "You messed up!" << std::endl;
+        }
+        else if (std::isdigit(str.at(pos))) {
+            buf = make_tokenint(str.substr(pos));
+            pos += buf.size();
+            tokens.push_back(Token { TokenType::int_lit, buf });
+        }
+        else if (str.at(pos) == ';') {
+            tokens.push_back(Token { TokenType::semi });
+            pos++;
+        }
+        else if (str.at(pos) == '\n') {
+            line++;
+            pos++;
+        }
+        else {
+            std::cerr << filename << ":" << line << ":" << pos + 1 << ": ERROR: unexpected character '" << str.at(pos)
+                      << "'" << std::endl;
+            std::cerr << err::caret_to_line(str, pos, line, 1) << std::endl;
             exit(EXIT_FAILURE);
         }
     }
@@ -70,17 +113,16 @@ std::vector<Token> tokenize(const std::string& str)
 std::string display_token(const Token& token)
 {
     std::stringstream output;
-    switch (token.type)
-    {
-        case TokenType::_return:
-            output << "return";
-            break;
-        case TokenType::int_lit:
-            output << "int_lit(" << token.value.value() << ")";
-            break;
-        case TokenType::semi:
-            output << "semi";
-            break;
+    switch (token.type) {
+    case TokenType::_return:
+        output << "return";
+        break;
+    case TokenType::int_lit:
+        output << "int_lit(" << token.value.value() << ")";
+        break;
+    case TokenType::semi:
+        output << "semi";
+        break;
     }
     return output.str();
 }
