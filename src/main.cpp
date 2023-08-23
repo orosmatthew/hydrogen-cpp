@@ -3,16 +3,21 @@
 #include <optional>
 #include <sstream>
 #include <vector>
+#include <thread>
 
 #include "./generation.hpp"
+#include "./utils.hpp"
 
 int main(int argc, char* argv[])
 {
+    utils::log_info("starting the hydro compiler");    
     if (argc != 2) {
-        std::cerr << "Incorrect usage. Correct usage is..." << std::endl;
-        std::cerr << "hydro <input.hy>" << std::endl;
+        utils::log_error("incorrect usage. correct usage is -> hydro <input.hy>");
+        utils::log_error("exiting the compiler with status code 1");
         return EXIT_FAILURE;
     }
+
+    utils::Timer timer;
 
     std::string contents;
     {
@@ -29,7 +34,8 @@ int main(int argc, char* argv[])
     std::optional<NodeProg> prog = parser.parse_prog();
 
     if (!prog.has_value()) {
-        std::cerr << "Invalid program" << std::endl;
+        utils::log_error("invalid program");
+        utils::log_error("exiting the compiler with status code 1");
         exit(EXIT_FAILURE);
     }
 
@@ -39,8 +45,14 @@ int main(int argc, char* argv[])
         file << generator.gen_prog();
     }
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
     system("nasm -felf64 out.asm");
     system("ld -o out out.o");
 
+    auto timer_stop = timer.stop();
+
+    utils::log_success("compilation finished in " + timer_stop + " secs");
+    utils::log_success("exiting the compiler with status code 0");
     return EXIT_SUCCESS;
 }

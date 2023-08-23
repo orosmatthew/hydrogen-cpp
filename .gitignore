@@ -1,3 +1,8 @@
+# build
 build
 cmake-build*
+out*
+
+# IDEs
 .idea
+.vscode
