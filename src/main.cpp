@@ -45,8 +45,6 @@ int main(int argc, char* argv[])
         file << generator.gen_prog();
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
     system("nasm -felf64 out.asm");
     system("ld -o out out.o");
 
