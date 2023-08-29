@@ -9,7 +9,7 @@ $$
     [\text{Expr}] &\to
     \begin{cases}
         [\text{Term}] \\
-        [\text{NodeBinExpr}]
+        [\text{BinExpr}]
     \end{cases} \\
     [\text{BinExpr}] &\to
     \begin{cases}
