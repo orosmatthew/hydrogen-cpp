@@ -2,6 +2,7 @@
 
 #include "parser.hpp"
 #include <cassert>
+#include <algorithm>
 
 class Generator {
 public:
