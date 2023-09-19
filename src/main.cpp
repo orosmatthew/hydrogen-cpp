@@ -5,13 +5,19 @@
 #include <vector>
 
 #include "./generation.hpp"
+#include "./generationWin.hpp"
 
 int main(int argc, char* argv[])
 {
-    if (argc != 2) {
+    if (argc < 2) {
         std::cerr << "Incorrect usage. Correct usage is..." << std::endl;
-        std::cerr << "hydro <input.hy>" << std::endl;
+        std::cerr << "hydro <input.hy> <platform[win/linux]>" << std::endl;
         return EXIT_FAILURE;
+    }
+
+    std::string platform = "linux";
+    if (argc > 2) {
+        platform = argv[2];
     }
 
     std::string contents;
@@ -33,14 +39,24 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    Generator generator(prog.value());
-    {
+    if (platform == "win") {
+        GeneratorWin generator(prog.value());
         std::fstream file("out.asm", std::ios::out);
         file << generator.gen_prog();
+        file.close();
+        system("nasm -fwin64 out.asm");
+        // Couldn't find a reliable linker for windows but it still generates valid windows assembly.
+        // Also for windows you also have to link kernel32.dll to the linker
+        // You could use GoLink for the linker if you want to (That's what I tested this with but it will work with any other windows linker).
     }
-
-    system("nasm -felf64 out.asm");
-    system("ld -o out out.o");
+    else if (platform == "linux") {
+        Generator generator(prog.value());
+        std::fstream file("out.asm", std::ios::out);
+        file << generator.gen_prog();
+        file.close();
+        system("nasm -felf64 out.asm");
+        system("ld -o out out.o");
+    }
 
     return EXIT_SUCCESS;
 }
