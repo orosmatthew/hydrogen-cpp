@@ -21,7 +21,7 @@ enum class TokenType {
     if_
 };
 
-std::optional<int> bin_prec(TokenType type)
+inline std::optional<int> bin_prec(const TokenType type)
 {
     switch (type) {
     case TokenType::minus:
@@ -37,17 +37,17 @@ std::optional<int> bin_prec(TokenType type)
 
 struct Token {
     TokenType type;
-    std::optional<std::string> value {};
+    std::optional<std::string> value{};
 };
 
 class Tokenizer {
 public:
-    inline explicit Tokenizer(std::string src)
+    explicit Tokenizer(std::string src)
         : m_src(std::move(src))
     {
     }
 
-    inline std::vector<Token> tokenize()
+    std::vector<Token> tokenize()
     {
         std::vector<Token> tokens;
         std::string buf;
@@ -135,17 +135,15 @@ public:
     }
 
 private:
-    [[nodiscard]] inline std::optional<char> peek(size_t offset = 0) const
+    [[nodiscard]] std::optional<char> peek(size_t offset = 0) const
     {
         if (m_index + offset >= m_src.length()) {
             return {};
         }
-        else {
-            return m_src.at(m_index + offset);
-        }
+        return m_src.at(m_index + offset);
     }
 
-    inline char consume()
+    char consume()
     {
         return m_src.at(m_index++);
     }
