@@ -195,7 +195,7 @@ private:
         size_t pop_count = m_vars.size() - m_scopes.back();
         m_output << "    add rsp, " << pop_count * 8 << "\n";
         m_stack_size -= pop_count;
-        for (int i = 0; i < pop_count; i++) {
+        for (size_t i = 0; i < pop_count; i++) {
             m_vars.pop_back();
         }
         m_scopes.pop_back();

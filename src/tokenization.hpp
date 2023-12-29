@@ -135,7 +135,7 @@ public:
     }
 
 private:
-    [[nodiscard]] inline std::optional<char> peek(int offset = 0) const
+    [[nodiscard]] inline std::optional<char> peek(size_t offset = 0) const
     {
         if (m_index + offset >= m_src.length()) {
             return {};
