@@ -89,7 +89,6 @@ struct NodeStmtIf {
     std::optional<NodeIfPred*> pred;
 };
 
-// TODO: use using instead of struct
 struct NodeStmt {
     std::variant<NodeStmtExit*, NodeStmtLet*, NodeScope*, NodeStmtIf*> var;
 };
