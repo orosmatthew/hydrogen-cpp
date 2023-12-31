@@ -21,6 +21,7 @@ enum class TokenType {
     if_,
     elif,
     else_,
+    line_break,
 };
 
 inline std::optional<int> bin_prec(const TokenType type)
@@ -157,6 +158,7 @@ public:
             }
             else if (std::isspace(peek().value())) {
                 consume();
+                tokens.push_back({ .type = TokenType:: line_break });
             }
             else {
                 std::cerr << "You messed up!" << std::endl;
