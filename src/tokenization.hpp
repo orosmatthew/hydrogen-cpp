@@ -39,7 +39,7 @@ inline std::optional<int> bin_prec(const TokenType type)
 
 struct Token {
     TokenType type;
-    std::optional<std::string> value{};
+    std::optional<std::string> value {};
 };
 
 class Tokenizer {
@@ -168,7 +168,7 @@ public:
     }
 
 private:
-    [[nodiscard]] std::optional<char> peek(size_t offset = 0) const
+    [[nodiscard]] std::optional<char> peek(const size_t offset = 0) const
     {
         if (m_index + offset >= m_src.length()) {
             return {};

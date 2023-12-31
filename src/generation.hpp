@@ -1,12 +1,13 @@
 #pragma once
 
-#include "parser.hpp"
-#include <cassert>
 #include <algorithm>
+#include <cassert>
+
+#include "parser.hpp"
 
 class Generator {
 public:
-    inline explicit Generator(NodeProg prog)
+    explicit Generator(NodeProg prog)
         : m_prog(std::move(prog))
     {
     }
@@ -24,11 +25,9 @@ public:
 
             void operator()(const NodeTermIdent* term_ident) const
             {
-                const auto it = std::ranges::find_if(
-                    std::as_const(gen.m_vars),
-                    [&](const Var& var) {
-                        return var.name == term_ident->ident.value.value();
-                    });
+                const auto it = std::ranges::find_if(std::as_const(gen.m_vars), [&](const Var& var) {
+                    return var.name == term_ident->ident.value.value();
+                });
                 if (it == gen.m_vars.cend()) {
                     std::cerr << "Undeclared identifier: " << term_ident->ident.value.value() << std::endl;
                     exit(EXIT_FAILURE);
@@ -93,7 +92,7 @@ public:
             }
         };
 
-        BinExprVisitor visitor{ .gen = *this };
+        BinExprVisitor visitor { .gen = *this };
         std::visit(visitor, bin_expr->var);
     }
 
@@ -113,7 +112,7 @@ public:
             }
         };
 
-        ExprVisitor visitor{ .gen = *this };
+        ExprVisitor visitor { .gen = *this };
         std::visit(visitor, expr->var);
     }
 
@@ -153,7 +152,7 @@ public:
             }
         };
 
-        PredVisitor visitor{ .gen = *this, .end_label = end_label };
+        PredVisitor visitor { .gen = *this, .end_label = end_label };
         std::visit(visitor, pred->var);
     }
 
@@ -173,10 +172,9 @@ public:
             void operator()(const NodeStmtLet* stmt_let) const
             {
                 if (std::ranges::find_if(
-                    std::as_const(gen.m_vars),
-                    [&](const Var& var) {
-                        return var.name == stmt_let->ident.value.value();
-                    }) != gen.m_vars.cend()) {
+                        std::as_const(gen.m_vars),
+                        [&](const Var& var) { return var.name == stmt_let->ident.value.value(); })
+                    != gen.m_vars.cend()) {
                     std::cerr << "Identifier already used: " << stmt_let->ident.value.value() << std::endl;
                     exit(EXIT_FAILURE);
                 }
@@ -197,6 +195,7 @@ public:
                 gen.m_output << "    test rax, rax\n";
                 gen.m_output << "    jz " << label << "\n";
                 gen.gen_scope(stmt_if->scope);
+                gen.m_output << "    jmp " << label << "\n";
                 gen.m_output << label << ":\n";
                 if (stmt_if->pred.has_value()) {
                     const std::string end_label = gen.create_label();
@@ -206,7 +205,7 @@ public:
             }
         };
 
-        StmtVisitor visitor{ .gen = *this };
+        StmtVisitor visitor { .gen = *this };
         std::visit(visitor, stmt->var);
     }
 
@@ -268,7 +267,7 @@ private:
     const NodeProg m_prog;
     std::stringstream m_output;
     size_t m_stack_size = 0;
-    std::vector<Var> m_vars{};
-    std::vector<size_t> m_scopes{};
+    std::vector<Var> m_vars {};
+    std::vector<size_t> m_scopes {};
     int m_label_count = 0;
 };

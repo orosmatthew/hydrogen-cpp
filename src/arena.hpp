@@ -1,13 +1,12 @@
 #pragma once
 
 #include <cstddef>
-#include <cstdlib>
 #include <memory>
 #include <utility>
 
-class ArenaAllocator final {
+class ArenaAllocator {
 public:
-    explicit ArenaAllocator(const std::size_t max_num_bytes)
+    explicit ArenaAllocator(const size_t max_num_bytes)
         : m_size { max_num_bytes }
         , m_buffer { new std::byte[max_num_bytes] }
         , m_offset { m_buffer }
@@ -35,7 +34,7 @@ public:
     template <typename T>
     [[nodiscard]] T* alloc()
     {
-        std::size_t remaining_num_bytes = m_size - static_cast<std::size_t>(m_offset - m_buffer);
+        size_t remaining_num_bytes = m_size - static_cast<size_t>(m_offset - m_buffer);
         auto pointer = static_cast<void*>(m_offset);
         const auto aligned_address = std::align(alignof(T), sizeof(T), pointer, remaining_num_bytes);
         if (aligned_address == nullptr) {
@@ -63,7 +62,7 @@ public:
     }
 
 private:
-    std::size_t m_size;
+    size_t m_size;
     std::byte* m_buffer;
     std::byte* m_offset;
 };
