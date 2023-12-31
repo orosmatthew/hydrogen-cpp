@@ -133,6 +133,7 @@ public:
 
             void operator()(const NodeIfPredElif* elif) const
             {
+                gen.m_output << "    ;; elif\n";
                 gen.gen_expr(elif->expr);
                 gen.pop("rax");
                 const std::string label = gen.create_label();
@@ -148,6 +149,7 @@ public:
 
             void operator()(const NodeIfPredElse* else_) const
             {
+                gen.m_output << "    ;; else\n";
                 gen.gen_scope(else_->scope);
             }
         };
@@ -163,14 +165,17 @@ public:
 
             void operator()(const NodeStmtExit* stmt_exit) const
             {
+                gen.m_output << "    ;; exit\n";
                 gen.gen_expr(stmt_exit->expr);
                 gen.m_output << "    mov rax, 60\n";
                 gen.pop("rdi");
                 gen.m_output << "    syscall\n";
+                gen.m_output << "    ;; /exit\n";
             }
 
             void operator()(const NodeStmtLet* stmt_let) const
             {
+                gen.m_output << "    ;; let\n";
                 if (std::ranges::find_if(
                         std::as_const(gen.m_vars),
                         [&](const Var& var) { return var.name == stmt_let->ident.value.value(); })
@@ -180,15 +185,19 @@ public:
                 }
                 gen.m_vars.push_back({ .name = stmt_let->ident.value.value(), .stack_loc = gen.m_stack_size });
                 gen.gen_expr(stmt_let->expr);
+                gen.m_output << "    ;; /let\n";
             }
 
             void operator()(const NodeScope* scope) const
             {
+                gen.m_output << "    ;; scope\n";
                 gen.gen_scope(scope);
+                gen.m_output << "    ;; /scope\n";
             }
 
             void operator()(const NodeStmtIf* stmt_if) const
             {
+                gen.m_output << "    ;; if\n";
                 gen.gen_expr(stmt_if->expr);
                 gen.pop("rax");
                 const std::string label = gen.create_label();
@@ -202,6 +211,7 @@ public:
                     gen.gen_if_pred(stmt_if->pred.value(), end_label);
                     gen.m_output << end_label << ":\n";
                 }
+                gen.m_output << "    ;; /if\n";
             }
         };
 
@@ -244,7 +254,9 @@ private:
     void end_scope()
     {
         const size_t pop_count = m_vars.size() - m_scopes.back();
-        m_output << "    add rsp, " << pop_count * 8 << "\n";
+        if (pop_count != 0) {
+            m_output << "    add rsp, " << pop_count * 8 << "\n";
+        }
         m_stack_size -= pop_count;
         for (size_t i = 0; i < pop_count; i++) {
             m_vars.pop_back();
