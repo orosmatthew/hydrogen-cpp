@@ -6,6 +6,61 @@
 #include "arena.hpp"
 #include "tokenization.hpp"
 
+#include <typeinfo>
+
+
+// My standard for compiler error messages:
+/*
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+All error messages start with 'Compiler error, line: __'. The '__' holds an integer, eg. 23, and tells you where the error was thrown. The 'Compiler error' part is for clarity -- likely not necessary, but I like it.
+It finds this line position by adding a new type of token, called the line_break. This token represents the '/n', and doesn't affect anything with how it gets compiled. There's also an int variable called cur_line. The only time it's read from is when an error is given, and the only time its value is changed is when the program hits a line_break.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If we have some specific reason to believe that some token should be of a type it is not, the format is as follows:
+
+	Compiler error, line = __: Expected [token type] because of '[that specific reason]' but instead found [the token's real type]
+
+For example: 
+	
+	Compiler error, line = 18: Expected 'identity' because of 'let' but instead found 'exit'
+
+There may also be multiple types it could be, and here's an example of that:
+
+	Compiler error, line = 18: Expected  'minus' or 'plus' or 'multiply' or 'divide' or 'closing_paren'  because of  'open_paren' and 'int_lit' but instead found 'exit'
+
+Notice that, in both of those examples, the  token types don't quite match how they're actually called. That's because this is, of course, humanly added into the compiler. That assumes that the compiler continues expanding in the some vein, but frankly, I don't care.
+
+This gives a very clear reason for why there was an error, and gives the coder the needed tools to fix it -- in this case, knowing exactly where it is, and what types were expected and found.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If the compiler knows that there should be an accompanying token, it uses this layout. To be clear, by 'there should be an accompanying token', I mean that if there's an opening parenthesis, then there has to be a closing one, else the code should not compile.
+
+	Compiler error, line = __: Unaccompanied [whatever type of thing it is] -- could not find matching [whatever type the other think is]
+
+For example:
+	
+	Compiler error, line = 18: Unaccompanied 'open_square_bracket' -- could not find matching 'closing_square_bracket'
+
+This and the last example are very similar circumstances, so I'm not 100% sure if they should be seperate like this. It's really quite arbitrary what error messages I've used for what problems the compiler finds if it should be one of the two, but for now I'll keep it like this.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The last possibility is for if the compiler failed to parse an expression or statement or scope or something of the like, but that's all we know. That's written as such:
+
+	                Compiler error, line = __: Failed to parse [what it failed to parse]
+
+which seems somewhat self-evident in meaning.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*/
+
+int cur_line = 1;
+
 struct NodeTermIntLit {
     Token int_lit;
 };
@@ -120,10 +175,10 @@ public:
         if (auto open_paren = try_consume(TokenType::open_paren)) {
             auto expr = parse_expr();
             if (!expr.has_value()) {
-                std::cerr << "Expected expression" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse expression" << std::endl;
                 exit(EXIT_FAILURE);
             }
-            try_consume(TokenType::close_paren, "Expected `)`");
+            try_consume(TokenType::close_paren, "Compiler error, line = " + std::to_string(cur_pos) + ": Expected `close_paren` because of 'open_paren' and 'expression' but instead found " + typeid(peek().value()).name());
             auto term_paren = m_allocator.emplace<NodeTermParen>(expr.value());
             auto term = m_allocator.emplace<NodeTerm>(term_paren);
             return term;
@@ -155,7 +210,7 @@ public:
             const int next_min_prec = prec.value() + 1;
             auto expr_rhs = parse_expr(next_min_prec);
             if (!expr_rhs.has_value()) {
-                std::cerr << "Unable to parse expression" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse expression" << std::endl;
                 exit(EXIT_FAILURE);
             }
             auto expr = m_allocator.emplace<NodeBinExpr>();
@@ -197,28 +252,28 @@ public:
         while (auto stmt = parse_stmt()) {
             scope->stmts.push_back(stmt.value());
         }
-        try_consume(TokenType::close_curly, "Expected `}`");
+        try_consume(TokenType::close_curly, "Compiler error, line = " + std::to_string(cur_line) + ": Unaccompanied 'open_curly_bracket' -- could not find matching 'closing_curly_bracket'");
         return scope;
     }
 
     std::optional<NodeIfPred*> parse_if_pred() // NOLINT(*-no-recursion)
     {
         if (try_consume(TokenType::elif)) {
-            try_consume(TokenType::open_paren, "Expected `(`");
+            try_consume(TokenType::open_paren, "Compiler error, line = " + std::to_string(cur_line) + ": Expected `open_paren` because of 'elif' but instead found " + typeid(peek().value()).name());
             const auto elif = m_allocator.alloc<NodeIfPredElif>();
             if (const auto expr = parse_expr()) {
                 elif->expr = expr.value();
             }
             else {
-                std::cerr << "Expected expression" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse expression" << std::endl;
                 exit(EXIT_FAILURE);
             }
-            try_consume(TokenType::close_paren, "Expected `)`");
+            try_consume(TokenType::close_paren,"Compiler error, line = " + std::to_string(cur_line) + ": Unaccompanied 'open_paren' -- could not find matching 'closing_paren'");
             if (const auto scope = parse_scope()) {
                 elif->scope = scope.value();
             }
             else {
-                std::cerr << "Expected scope" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse scope" << std::endl;
                 exit(EXIT_FAILURE);
             }
             elif->pred = parse_if_pred();
@@ -231,7 +286,7 @@ public:
                 else_->scope = scope.value();
             }
             else {
-                std::cerr << "Expected scope" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse scope" << std::endl;
                 exit(EXIT_FAILURE);
             }
             auto pred = m_allocator.emplace<NodeIfPred>(else_);
@@ -251,11 +306,11 @@ public:
                 stmt_exit->expr = node_expr.value();
             }
             else {
-                std::cerr << "Invalid expression" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse expression" << std::endl;
                 exit(EXIT_FAILURE);
             }
-            try_consume(TokenType::close_paren, "Expected `)`");
-            try_consume(TokenType::semi, "Expected `;`");
+            try_consume(TokenType::close_paren,"Compiler error, line = " + std::to_string(cur_line) + ": Unaccompanied 'open_paren' -- could not find matching 'close_paren'");
+            try_consume(TokenType::semi, "Compiler error, line = " + std::to_string(cur_line) + ": Expected 'semicolon' because of 'close_paren' but instead found " + typeid(peek().value()).name());
             auto stmt = m_allocator.emplace<NodeStmt>();
             stmt->var = stmt_exit;
             return stmt;
@@ -271,10 +326,10 @@ public:
                 stmt_let->expr = expr.value();
             }
             else {
-                std::cerr << "Invalid expression" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse expression" << std::endl;
                 exit(EXIT_FAILURE);
             }
-            try_consume(TokenType::semi, "Expected `;`");
+            try_consume(TokenType::semi, "Compiler error, line = " + std::to_string(cur_line) + ": Expected 'semicolon' because of 'close_paren' but instead found " + typeid(peek().value()).name());
             auto stmt = m_allocator.emplace<NodeStmt>();
             stmt->var = stmt_let;
             return stmt;
@@ -284,25 +339,25 @@ public:
                 auto stmt = m_allocator.emplace<NodeStmt>(scope.value());
                 return stmt;
             }
-            std::cerr << "Invalid scope" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse scope" << std::endl;
             exit(EXIT_FAILURE);
         }
         if (auto if_ = try_consume(TokenType::if_)) {
-            try_consume(TokenType::open_paren, "Expected `(`");
+            try_consume(TokenType::open_paren, "Compiler error, line = " + std::to_string(cur_line) + ": Expected 'open_paren' because of 'if' but instead found " + typeid(peek().value()).name());
             auto stmt_if = m_allocator.emplace<NodeStmtIf>();
             if (const auto expr = parse_expr()) {
                 stmt_if->expr = expr.value();
             }
             else {
-                std::cerr << "Invalid expression" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse expression" << std::endl;
                 exit(EXIT_FAILURE);
             }
-            try_consume(TokenType::close_paren, "Expected `)`");
+            try_consume(TokenType::close_paren, "Compiler error, line = " + std::to_string(cur_line) + ": Expected 'close_paren' because of 'open_paren' and 'expression' but instead found " + typeid(peek().value()).name());
             if (const auto scope = parse_scope()) {
                 stmt_if->scope = scope.value();
             }
             else {
-                std::cerr << "Invalid scope" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse scope" << std::endl;
                 exit(EXIT_FAILURE);
             }
             stmt_if->pred = parse_if_pred();
@@ -320,7 +375,7 @@ public:
                 prog.stmts.push_back(stmt.value());
             }
             else {
-                std::cerr << "Invalid statement" << std::endl;
+                std::cerr << "Compiler error, line = " + std::to_string(cur_line) + ": Failed to parse statement" << std::endl;
                 exit(EXIT_FAILURE);
             }
         }
@@ -338,6 +393,9 @@ private:
 
     Token consume()
     {
+	if (m_tokens.at(m_index) == '/n'){
+		cur_line += 1;
+	}
         return m_tokens.at(m_index++);
     }
 
