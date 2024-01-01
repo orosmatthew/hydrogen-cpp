@@ -3,21 +3,53 @@
 #include <optional>
 #include <sstream>
 #include <vector>
+#include <cstring>
 
 #include "generation.hpp"
 
 int main(int argc, char* argv[])
 {
-    if (argc != 2) {
+
+    std::string outputFile = "out";
+    std::string inputFile;
+    bool debug = false;
+
+
+    if (argc < 2) {
         std::cerr << "Incorrect usage. Correct usage is..." << std::endl;
         std::cerr << "hydro <input.hy>" << std::endl;
         return EXIT_FAILURE;
     }
 
+    for (int i = 1; i < argc; ++i) {
+        if (std::strcmp(argv[i], "-o") == 0) {
+            // Check if there is another argument after -o
+            if (i + 1 < argc) {
+                outputFile = argv[i + 1];
+                i++;  // Skip the next argument (output file name)
+            } else {
+                std::cerr << "Error: -o option requires an argument.\n";
+                return 1;
+            }
+        } else if (std::strcmp(argv[i], "-d") == 0) {
+            // Set the flag to execute the function
+            debug = true;
+        } else {
+            // Assume the argument is an input file
+            inputFile = argv[i];
+        }
+    }
+
+    // Check if input file name is provided
+    if (inputFile.empty()) {
+        std::cerr << "Error: Input file not provided.\n";
+        return 1;
+    }
+
     std::string contents;
     {
         std::stringstream contents_stream;
-        std::fstream input(argv[1], std::ios::in);
+        std::fstream input(inputFile, std::ios::in);
         contents_stream << input.rdbuf();
         contents = contents_stream.str();
     }
@@ -39,8 +71,16 @@ int main(int argc, char* argv[])
         file << generator.gen_prog();
     }
 
+    std::string ldCmd = "ld out.o -o ";
+    ldCmd.append(outputFile);
+
     system("nasm -felf64 out.asm");
-    system("ld -o out out.o");
+    system(ldCmd.c_str());
+
+    if (!debug) {
+        system("rm out.asm");
+        system("rm out.o");
+    }
 
 
     return EXIT_SUCCESS;
