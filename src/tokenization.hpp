@@ -107,6 +107,9 @@ public:
                     if (peek().value() == '*' && peek(1).has_value() && peek(1).value() == '/') {
                         break;
                     }
+                    if (peek().value() == '/n'){
+                        tokens.push_back({ .type = TokenType::line_break })
+                    }
                     consume();
                 }
                 if (peek().has_value()) {
