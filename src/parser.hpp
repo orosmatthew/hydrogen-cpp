@@ -393,7 +393,7 @@ private:
 
     Token consume()
     {
-	if (m_tokens.at(m_index) == '/n'){
+	if (m_tokens.at(m_index).type == TokenType::line_break){
 		cur_line += 1;
 	}
         return m_tokens.at(m_index++);
