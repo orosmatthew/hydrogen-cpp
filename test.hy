@@ -1,13 +1,15 @@
 let y = (10 - 2 * 3) / 2;
-let x = 1; // first
+let x = 7; // first
 // first
-if (1) {
-    exit(69);
-} elif (1) {
-    exit(68);
+if (0) {
+    x = 1;
+} elif (0) {
+    x = 2;
 } else {
-    exit(67);
+    x = 3;
 }
+
+exit(x);
 
 /*
 exit(4);
