@@ -135,18 +135,18 @@ public:
                 tokens.push_back({ TokenType::int_lit, line_count, buf });
                 buf.clear();
             }
-            else if (peek().value() == '/' && peek(1).has_value() && peek(1).value() == '/') {
+            else if (expect("//")) {
                 consume();
                 consume();
                 while (peek().has_value() && peek().value() != '\n') {
                     consume();
                 }
             }
-            else if (peek().value() == '/' && peek(1).has_value() && peek(1).value() == '*') {
+            else if (expect("/*")) {
                 consume();
                 consume();
                 while (peek().has_value()) {
-                    if (peek().value() == '*' && peek(1).has_value() && peek(1).value() == '/') {
+                    if (expect("*/")) {
                         break;
                     }
                     consume();
@@ -158,47 +158,47 @@ public:
                     consume();
                 }
             }
-            else if (peek().value() == '(') {
+            else if (expect("(")) {
                 consume();
                 tokens.push_back({ TokenType::open_paren, line_count });
             }
-            else if (peek().value() == ')') {
+            else if (expect(")")) {
                 consume();
                 tokens.push_back({ TokenType::close_paren, line_count });
             }
-            else if (peek().value() == ';') {
+            else if (expect(";")) {
                 consume();
                 tokens.push_back({ TokenType::semi, line_count });
             }
-            else if (peek().value() == '=') {
+            else if (expect("=")) {
                 consume();
                 tokens.push_back({ TokenType::eq, line_count });
             }
-            else if (peek().value() == '+') {
+            else if (expect("+")) {
                 consume();
                 tokens.push_back({ TokenType::plus, line_count });
             }
-            else if (peek().value() == '*') {
+            else if (expect("*")) {
                 consume();
                 tokens.push_back({ TokenType::star, line_count });
             }
-            else if (peek().value() == '-') {
+            else if (expect("-")) {
                 consume();
                 tokens.push_back({ TokenType::minus, line_count });
             }
-            else if (peek().value() == '/') {
+            else if (expect("/")) {
                 consume();
                 tokens.push_back({ TokenType::fslash, line_count });
             }
-            else if (peek().value() == '{') {
+            else if (expect("{")) {
                 consume();
                 tokens.push_back({ TokenType::open_curly, line_count });
             }
-            else if (peek().value() == '}') {
+            else if (expect("}")) {
                 consume();
                 tokens.push_back({ TokenType::close_curly, line_count });
             }
-            else if (peek().value() == '\n') {
+            else if (expect("\n")) {
                 consume();
                 line_count++;
             }
@@ -226,6 +226,12 @@ private:
     char consume()
     {
         return m_src.at(m_index++);
+    }
+
+    bool expect(const std::string& next)
+    {
+        return m_index + next.length() < m_src.length() //
+            && m_src.substr(m_index,  next.length()) == next;
     }
 
     const std::string m_src;

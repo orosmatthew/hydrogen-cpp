@@ -6,6 +6,7 @@ if (0) {
 } elif (0) {
     x = 2;
 } else {
+    exit(3);
     x = 3;
 }
 
