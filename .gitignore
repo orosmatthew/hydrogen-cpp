@@ -2,4 +2,3 @@ build
 cmake-build*
 .idea
 .vscode
-.gitignore
