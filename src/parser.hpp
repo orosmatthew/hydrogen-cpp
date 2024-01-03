@@ -248,8 +248,7 @@ public:
 
     std::optional<NodeStmt*> parse_stmt() // NOLINT(*-no-recursion)
     {
-        if (peek().has_value() && peek().value().type == TokenType::exit && peek(1).has_value()
-            && peek(1).value().type == TokenType::open_paren) {
+        if (expect(TokenType::exit) && expect(TokenType::open_paren, 1)) {
             consume();
             consume();
             auto stmt_exit = m_allocator.emplace<NodeStmtExit>();
@@ -265,9 +264,7 @@ public:
             stmt->var = stmt_exit;
             return stmt;
         }
-        if (peek().has_value() && peek().value().type == TokenType::let && peek(1).has_value()
-            && peek(1).value().type == TokenType::ident && peek(2).has_value()
-            && peek(2).value().type == TokenType::eq) {
+        if (expect(TokenType::let) && expect(TokenType::ident, 1) && expect(TokenType::eq, 2)) {
             consume();
             auto stmt_let = m_allocator.emplace<NodeStmtLet>();
             stmt_let->ident = consume();
@@ -283,8 +280,7 @@ public:
             stmt->var = stmt_let;
             return stmt;
         }
-        if (peek().has_value() && peek().value().type == TokenType::ident && peek(1).has_value()
-            && peek(1).value().type == TokenType::eq) {
+        if (expect(TokenType::ident) && expect(TokenType::eq, 1)) {
             const auto assign = m_allocator.alloc<NodeStmtAssign>();
             assign->ident = consume();
             consume();
@@ -298,7 +294,7 @@ public:
             auto stmt = m_allocator.emplace<NodeStmt>(assign);
             return stmt;
         }
-        if (peek().has_value() && peek().value().type == TokenType::open_curly) {
+        if (expect(TokenType::open_curly)) {
             if (auto scope = parse_scope()) {
                 auto stmt = m_allocator.emplace<NodeStmt>(scope.value());
                 return stmt;
@@ -356,9 +352,14 @@ private:
         return m_tokens.at(m_index++);
     }
 
+    [[nodiscard]] bool expect(TokenType type, int offset = 0) const
+    {
+        return peek(offset).has_value() && peek(offset).value().type == type;
+    }
+
     Token try_consume_err(const TokenType type)
     {
-        if (peek().has_value() && peek().value().type == type) {
+        if (expect(type)) {
             return consume();
         }
         error_expected(to_string(type));
@@ -367,7 +368,7 @@ private:
 
     std::optional<Token> try_consume(const TokenType type)
     {
-        if (peek().has_value() && peek().value().type == type) {
+        if (expect(type)) {
             return consume();
         }
         return {};
