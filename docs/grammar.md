@@ -5,6 +5,7 @@ $$
     \begin{cases}
         \text{exit}([\text{Expr}]); \\
         \text{let}\space\text{ident} = [\text{Expr}]; \\
+        \text{ident} = \text{[Expr]}; \\
         \text{if} ([\text{Expr}])[\text{Scope}]\text{[IfPred]}\\
         [\text{Scope}]
     \end{cases} \\
