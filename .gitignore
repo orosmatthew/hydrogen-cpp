@@ -3,3 +3,6 @@ cmake-build*
 .idea
 .vscode
 .gitignore
+out
+out.o
+out.asm

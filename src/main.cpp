@@ -10,17 +10,26 @@
 int main(int argc, char* argv[])
 {
 
-    std::string outputFile = "out";
-    std::string inputFile;
-    bool debug = false;
+    std::string outputFile = "out"; // Output file
+    std::string inputFile; // Input file. Cannot be empty
+    bool debug = false; // Debug flag
+
+    /*
+    Arguments:
+    -o :: specifies the output file. Optional. Default: out
+    -h :: shows info / help command. Optional
+    -d :: enables debug mode. Optional. Default: false
+
+    Debug: When true: Will create out.asm and out.o and will not delete them
+    */
 
 
     if (argc < 2) {
-        std::cerr << "Incorrect usage. Correct usage is..." << std::endl;
-        std::cerr << "hydro <input.hy>" << std::endl;
-        return EXIT_FAILURE;
+        std::cerr << "Incorrect usage. Use -h argument for help!" << std::endl; // Use help menu instead of printing the usage
+        exit(EXIT_FAILURE);
     }
 
+    // Argument loop
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "-o") == 0) {
             // Check if there is another argument after -o
@@ -28,22 +37,41 @@ int main(int argc, char* argv[])
                 outputFile = argv[i + 1];
                 i++;  // Skip the next argument (output file name)
             } else {
-                std::cerr << "Error: -o option requires an argument.\n";
-                return 1;
+                std::cerr << "Error: -o option requires an argument." << std::endl;
+                exit(EXIT_FAILURE);
             }
         } else if (std::strcmp(argv[i], "-d") == 0) {
-            // Set the flag to execute the function
+            // Set the flag to generate the debug files
             debug = true;
+        } else if (std::strcmp(argv[i], "-h") == 0) {
+            std::cout << "Welcome to the Hydrogen compiler help menu!" << std::endl << std::endl;
+
+            std::cout << "Information:" << std::endl; // print information
+            std::cout << "\tSources: https://github.com/orosmatthew/hydrogen-cpp" << std::endl;
+            std::cout << "\tIssues: https://github.com/orosmatthew/hydrogen-cpp/issues" << std::endl;
+            std::cout << "\tLicense: MIT (https://opensource.org/license/mit/)" << std::endl << std::endl;
+
+            std::cout << "Usage: " << std::endl; // print usage
+            std::cout << "\thydro <[optional] flags> <input file> <[optional]flags>" << std::endl << std::endl;
+            std::cout << "Argument List:" << std::endl; // print flag usage
+            std::cout << "\t-h -- Show argument help." << std::endl;
+            std::cout << "\t-o -- Specifie output file." << std::endl;
+            std::cout << "\t-d -- Generate out.asm and out.asm file." << std::endl;
+            exit(EXIT_SUCCESS); // So we dont generate the executable
         } else {
-            // Assume the argument is an input file
             inputFile = argv[i];
         }
     }
 
+    if (inputFile.starts_with("-")) { // No output file, that starts with '-' that would be wierd
+        std::cerr << "Error: Unknown Argument: " << inputFile << "! Use -h argument for help!"  << std::endl; // print error
+        exit(EXIT_FAILURE);
+    }
+
     // Check if input file name is provided
-    if (inputFile.empty()) {
-        std::cerr << "Error: Input file not provided.\n";
-        return 1;
+    if (inputFile.empty() || inputFile == "") {
+        std::cerr << "Error: Input file not provided." << std::endl; 
+        exit(EXIT_FAILURE);
     }
 
     std::string contents;
@@ -61,7 +89,7 @@ int main(int argc, char* argv[])
     std::optional<NodeProg> prog = parser.parse_prog();
 
     if (!prog.has_value()) {
-        std::cerr << "Invalid program" << std::endl;
+        std::cerr << "Error: Invalid program" << std::endl;
         exit(EXIT_FAILURE);
     }
 
