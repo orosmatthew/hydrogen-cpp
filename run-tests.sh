@@ -113,6 +113,21 @@ then
     rm tests/current_output
 fi
 
+if [ -f "out" ]
+then 
+    rm out
+fi
+
+if [ -f "out.asm" ]
+then 
+    rm "out.asm"
+fi
+
+if [ -f "out.o" ]
+then 
+    rm "out.o"
+fi
+
 echo
 echo "Test suite completed: "
 echo "\t${GREEN}${PASS} passed${RESET}"
