@@ -19,6 +19,10 @@ cmake --build build
 
 Executable will be `hydro` in the `build/` directory.
 
+## Documentation
+
+You find the start page in the `docs\Documentation.md` file.
+
 ## Contributing
 
 I am not accepting pull requests for now to better keep in sync with the accompanying video series. Possibly in the future.

@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     */
 
 
-    if (argc < 2) {
+    if (argc < 2) { // The command needs to have atleast two arguments. 1st: executable 2nd: input file
         std::cerr << "Incorrect usage. Use -h argument for help!" << std::endl; // Use help menu instead of printing the usage
         exit(EXIT_FAILURE);
     }
@@ -49,7 +49,8 @@ int main(int argc, char* argv[])
             std::cout << "Information:" << std::endl; // print information
             std::cout << "\tSources: https://github.com/orosmatthew/hydrogen-cpp" << std::endl;
             std::cout << "\tIssues: https://github.com/orosmatthew/hydrogen-cpp/issues" << std::endl;
-            std::cout << "\tLicense: MIT (https://opensource.org/license/mit/)" << std::endl << std::endl;
+            std::cout << "\t YouTube Series: https://www.youtube.com/playlist?list=PLUDlas_Zy_qC7c5tCgTMYq2idyyT241qs" << std::endl;
+            std::cout << "\tLicense: MIT https://opensource.org/license/mit/" << std::endl << std::endl;
 
             std::cout << "Usage: " << std::endl; // print usage
             std::cout << "\thydro <[optional] flags> <input file> <[optional]flags>" << std::endl << std::endl;
@@ -57,13 +58,14 @@ int main(int argc, char* argv[])
             std::cout << "\t-h -- Show argument help." << std::endl;
             std::cout << "\t-o -- Specifie output file." << std::endl;
             std::cout << "\t-d -- Generate out.asm and out.asm file." << std::endl;
-            exit(EXIT_SUCCESS); // So we dont generate the executable
+            exit(EXIT_SUCCESS); // So we dont generate the executable when using the help flags
         } else {
             inputFile = argv[i];
         }
     }
 
-    if (inputFile.starts_with("-")) { // No output file, that starts with '-' that would be wierd
+    // No output file, that starts with '-' that would be wierd
+    if (inputFile.starts_with("-")) { 
         std::cerr << "Error: Unknown Argument: " << inputFile << "! Use -h argument for help!"  << std::endl; // print error
         exit(EXIT_FAILURE);
     }
@@ -94,9 +96,9 @@ int main(int argc, char* argv[])
     }
 
     {
-        Generator generator(prog.value());
-        std::fstream file("out.asm", std::ios::out);
-        file << generator.gen_prog();
+        Generator generator(prog.value()); // Generate the assembly 
+        std::fstream file("out.asm", std::ios::out); // Opening the file
+        file << generator.gen_prog(); // Add input
     }
 
     std::string ldCmd = "ld out.o -o ";
