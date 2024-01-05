@@ -57,6 +57,7 @@ This will create the `hydro` executable in the `build\` directory. For usage ins
 
 ## Chapter 4: Syntax 
 # <b><u> TODO: ADD CHAPTER 4 </u></b>
+Test
 
 ## Chapter 5: Information
 ### Chapter: 5.1: Social Media
