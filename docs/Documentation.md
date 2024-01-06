@@ -114,4 +114,32 @@ These people have contributed to the project so far:
 * <b>[Ikos3k](https://github.com/Ikos3k)</b> -- [Changed Variable Types from `int` to `size_t`](https://github.com/orosmatthew/hydrogen-cpp/pull/9) </br>
 * <b>[mgerhold](https://github.com/mgerhold)</b> -- [Fixed issues in `ArenaAllocator`](https://github.com/orosmatthew/hydrogen-cpp/pull/11) </br>
 * <b>[lolguy91](https://github.com/lolguy91)</b> -- [Added the README.md](https://github.com/orosmatthew/hydrogen-cpp/pull/3) </br>
-* <b>[RaphtikAtGHG](https://github.com/RaphtikAtGHG)</b> -- [Added Arguments, Added Documentation and created the Discord server(Unofficial)]()
+* <b>[RaphtikAtGHG](https://github.com/RaphtikAtGHG)</b> -- [Added Arguments, Added Documentation and created the Discord server(Unofficial)](https://github.com/orosmatthew/hydrogen-cpp/pull/12)
+
+### Chapter 5.3: License
+This repository uses the [MIT License](https://opensource.org/license/mit/)
+
+<details>
+    <summary><b>The MIT License Text</b></summary>
+
+    Copyright (c) 2023-present Matthew Oros
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy 
+    of this software and associated documentation files (the "Software"), to deal 
+    in the Software without restriction, including without limitation the rights 
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all 
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE. 
+
+</details>

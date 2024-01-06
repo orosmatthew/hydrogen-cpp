@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
             std::cout << "Information:" << std::endl; // print information
             std::cout << "\tSources: https://github.com/orosmatthew/hydrogen-cpp" << std::endl;
             std::cout << "\tIssues: https://github.com/orosmatthew/hydrogen-cpp/issues" << std::endl;
-            std::cout << "\t YouTube Series: https://www.youtube.com/playlist?list=PLUDlas_Zy_qC7c5tCgTMYq2idyyT241qs" << std::endl;
-            std::cout << "\tLicense: MIT https://opensource.org/license/mit/" << std::endl << std::endl;
+            std::cout << "\tYouTube Series: https://www.youtube.com/playlist?list=PLUDlas_Zy_qC7c5tCgTMYq2idyyT241qs" << std::endl;
+            std::cout << "\tLicense: MIT License: https://opensource.org/license/mit/" << std::endl << std::endl;
 
             std::cout << "Usage: " << std::endl; // print usage
             std::cout << "\thydro <[optional] flags> <input file> <[optional]flags>" << std::endl << std::endl;
