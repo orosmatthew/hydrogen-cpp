@@ -8,7 +8,7 @@ Hydrogen is a interpreted language that compiles to an executable(i think). Plea
 The language is called Hydrogen because its lightweight, simple and it will light on fire when handled improperly.
 
 ## Chapter 2: Usage
-### Chpater 2.1: Basic usage
+### Chapter 2.1: Basic usage
 The basic usage is simple. Just use 
 ```bash
 hydro <input file>
@@ -56,12 +56,53 @@ This will create the `hydro` executable in the `build\` directory. For usage ins
 
 
 ## Chapter 4: Syntax 
-# <b><u> TODO: ADD CHAPTER 4 </u></b>
-Test
+### Chapter 4.1: Basic Syntax
+The Hydrogen language is a semicolon(`;`) based language. That means that after every line/statement you need to have a semicolon. </br> </br>
+The language also uses curly brackets (`{`and`}`) for scopes.
+
+### Chapter 4.2: Basic Keywords
+There are some basic keywords in the language right now. </br>
+These include:
+* `let` -- Declare variables.
+* `if` -- Add an `if` statement.
+* `else` -- Add an `else` branch to your `if statement`.
+* `elif` -- Add an `elif` branch to your `if statement`.
+### Chapter 4.3: Included Functions
+These are functions right build into the language.</br>
+These include:
+* `exit(EXIT_CODE)` -- Exits the program with the given exit code.
+
+### Chapter 4.4: Comments
+There are singe line and multi line comments in the hydrogen language.
+#### Chapter 4.4.1: Single Line Comments
+You can declare single line comments with `//`.</br>
+Example:
+```c
+// first
+```
+
+#### Chapter 4.4.2: Multi Line Comments
+You can also declare multi line comments using `/*` to begin and `*/` to end a multi line comment. </br>
+Example: 
+```c
+/* I like to code in C++
+Subscribe to Pixeled on YouTube
+I hope you have a great day! */
+```
+
+### Chapter 4.5: Variables
+You can create variables using the `let` keyword.
+The formula to create a variable is the following (Everything in curly brackets is a customaizable value) 
+```
+let {VAR_NAME} =  {VAR_INITIAL_VALUE};
+```
+
+### Chapter 4.6: Language Grammar/Language Blueprint
+For this information please look into the [Grammar File](grammar.md)
 
 ## Chapter 5: Information
 ### Chapter: 5.1: Social Media
-This project is also on YouTube in the Series "[Creating a Compiler](https://www.youtube.com/playlist?list=PLUDlas_Zy_qC7c5tCgTMYq2idyyT241qs)" by Pixeled </br>
+This project is also on YouTube in the Series "[Creating a Compiler](https://www.youtube.com/playlist?list=PLUDlas_Zy_qC7c5tCgTMYq2idyyT241qs)" by Pixeled. </br>
 Pixeled's Website: [pixeled.site](https://pixeled.site) </br>
 Discord Server: <b><u>NOT AVAILABLE</b></u>
 
@@ -73,4 +114,4 @@ These people have contributed to the project so far:
 * <b>[Ikos3k](https://github.com/Ikos3k)</b> -- [Changed Variable Types from `int` to `size_t`](https://github.com/orosmatthew/hydrogen-cpp/pull/9) </br>
 * <b>[mgerhold](https://github.com/mgerhold)</b> -- [Fixed issues in `ArenaAllocator`](https://github.com/orosmatthew/hydrogen-cpp/pull/11) </br>
 * <b>[lolguy91](https://github.com/lolguy91)</b> -- [Added the README.md](https://github.com/orosmatthew/hydrogen-cpp/pull/3) </br>
-* <b>RaphtikAtGHG</b> -- [Added Arguments, Added Documentation and created the Discord server(Unofficial)]()
+* <b>[RaphtikAtGHG](https://github.com/RaphtikAtGHG)</b> -- [Added Arguments, Added Documentation and created the Discord server(Unofficial)]()
