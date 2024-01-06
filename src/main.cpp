@@ -26,22 +26,21 @@ int main(int argc, char* argv[])
 
     if (argc < 2) { // The command needs to have atleast two arguments. 1st: executable 2nd: input file
         std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m Incorrect usage. Use -h argument for help!" << std::endl; // Use help menu instead of printing the usage
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE); // Exit the program on error
     }
 
     // Argument loop
     for (int i = 1; i < argc; ++i) {
-        if (std::strcmp(argv[i], "-o") == 0) {
-            // Check if there is another argument after -o
-            if (i + 1 < argc) {
-                outputFile = argv[i + 1];
-                i++;  // Skip the next argument (output file name)
+        if (std::strncmp(argv[i], "-o", 2) == 0) {
+            if (argv[i][2] != '\0') {
+                outputFile = argv[i] + 2;
+            } else if (i + 1 < argc && argv[i + 1][0] != '-') {
+                outputFile = argv[++i];
             } else {
-                std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m -o option requires an argument." << std::endl;
-                exit(EXIT_FAILURE);
+                std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m -o option requires an argument.\n";
+                return 1;
             }
         } else if (std::strcmp(argv[i], "-d") == 0) {
-            // Set the flag to generate the debug files
             debug = true;
         } else if (std::strcmp(argv[i], "-h") == 0) {
             std::cout << "Welcome to the Hydrogen compiler help menu!" << std::endl << std::endl;
@@ -59,16 +58,19 @@ int main(int argc, char* argv[])
             std::cout << "\t-o -- Specifie output file." << std::endl;
             std::cout << "\t-d -- Generate out.asm and out.asm file." << std::endl;
             exit(EXIT_SUCCESS); // So we dont generate the executable when using the help flags
+        } else if (argv[i][0] == '-') {
+            std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m Unrecognized argument '" << argv[i] << "'\n";
+            return 1;
         } else {
             inputFile = argv[i];
         }
     }
 
     // No output file, that starts with '-' that would be wierd
-    if (inputFile.starts_with("-")) { 
-        std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m Unknown Argument: " << inputFile << "! Use -h argument for help!"  << std::endl; // print error
-        exit(EXIT_FAILURE);
-    }
+    // if (inputFile.starts_with("-")) {
+    //     std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m Unknown Argument: " << inputFile << "! Use -h argument for help!"  << std::endl; // print error
+    //     exit(EXIT_FAILURE);
+    // }
 
     // Check if input file name is provided
     if (inputFile.empty()) {
