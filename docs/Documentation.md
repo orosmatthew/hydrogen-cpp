@@ -91,10 +91,18 @@ I hope you have a great day! */
 ```
 
 ### Chapter 4.5: Variables
+#### Chapter 4.5.1: Creating variables
 You can create variables using the `let` keyword.
 The formula to create a variable is the following (Everything in curly brackets is a customaizable value) 
 ```
 let {VAR_NAME} =  {VAR_INITIAL_VALUE};
+```
+
+#### Chapter 4.5.2: Assigning Variables
+You can also assign variables a new value using `=`. </br>
+Example: 
+```
+{VAR_NAME} = {VAR_VALUE_NEW};
 ```
 
 ### Chapter 4.6: Language Grammar/Language Blueprint
