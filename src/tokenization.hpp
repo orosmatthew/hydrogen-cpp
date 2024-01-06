@@ -206,7 +206,7 @@ public:
                 consume();
             }
             else {
-                std::cerr << "Invalid token" << std::endl;
+                std::cerr << "\u001B[31m \033[1m Tokenization-Error:\u001B[37m \033[0m Invalid token" << std::endl;
                 exit(EXIT_FAILURE);
             }
         }

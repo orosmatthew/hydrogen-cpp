@@ -1,3 +1,8 @@
 build
 cmake-build*
 .idea
+.vscode
+
+out
+out.o
+out.asm
