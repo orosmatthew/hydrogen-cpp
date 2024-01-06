@@ -112,7 +112,7 @@ public:
 
     void error_expected(const std::string& msg) const
     {
-        std::cerr << "[Parse Error] Expected " << msg << " on line " << peek(-1).value().line << std::endl;
+        std::cerr << "\u001B[31m \033[1m Parsing-Error:\u001B[37m \033[0m Expected " << msg << " on line " << peek(-1).value().line << std::endl;
         exit(EXIT_FAILURE);
     }
 

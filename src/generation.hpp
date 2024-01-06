@@ -29,7 +29,7 @@ public:
                     return var.name == term_ident->ident.value.value();
                 });
                 if (it == gen.m_vars.cend()) {
-                    std::cerr << "Undeclared identifier: " << term_ident->ident.value.value() << std::endl;
+                    std::cerr << "\u001B[31m \033[1m Generation-Error:\u001B[37m \033[0m Undeclared identifier: " << term_ident->ident.value.value() << std::endl;
                     exit(EXIT_FAILURE);
                 }
                 std::stringstream offset;
@@ -180,7 +180,7 @@ public:
                         std::as_const(gen.m_vars),
                         [&](const Var& var) { return var.name == stmt_let->ident.value.value(); })
                     != gen.m_vars.cend()) {
-                    std::cerr << "Identifier already used: " << stmt_let->ident.value.value() << std::endl;
+                    std::cerr << "\u001B[31m \033[1m Generation-Error:\u001B[37m \033[0m Identifier already used: " << stmt_let->ident.value.value() << std::endl;
                     exit(EXIT_FAILURE);
                 }
                 gen.m_vars.push_back({ .name = stmt_let->ident.value.value(), .stack_loc = gen.m_stack_size });
@@ -194,7 +194,7 @@ public:
                     return var.name == stmt_assign->ident.value.value();
                 });
                 if (it == gen.m_vars.end()) {
-                    std::cerr << "Undeclared identifier: " << stmt_assign->ident.value.value() << std::endl;
+                    std::cerr << "\u001B[31m \033[1m Generation-Error:\u001B[37m \033[0m Undeclared identifier: " << stmt_assign->ident.value.value() << std::endl;
                     exit(EXIT_FAILURE);
                 }
                 gen.gen_expr(stmt_assign->expr);

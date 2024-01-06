@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
 
     if (argc < 2) { // The command needs to have atleast two arguments. 1st: executable 2nd: input file
-        std::cerr << "Incorrect usage. Use -h argument for help!" << std::endl; // Use help menu instead of printing the usage
+        std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m Incorrect usage. Use -h argument for help!" << std::endl; // Use help menu instead of printing the usage
         exit(EXIT_FAILURE);
     }
 
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
                 outputFile = argv[i + 1];
                 i++;  // Skip the next argument (output file name)
             } else {
-                std::cerr << "Error: -o option requires an argument." << std::endl;
+                std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m -o option requires an argument." << std::endl;
                 exit(EXIT_FAILURE);
             }
         } else if (std::strcmp(argv[i], "-d") == 0) {
@@ -66,13 +66,13 @@ int main(int argc, char* argv[])
 
     // No output file, that starts with '-' that would be wierd
     if (inputFile.starts_with("-")) { 
-        std::cerr << "Error: Unknown Argument: " << inputFile << "! Use -h argument for help!"  << std::endl; // print error
+        std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m Unknown Argument: " << inputFile << "! Use -h argument for help!"  << std::endl; // print error
         exit(EXIT_FAILURE);
     }
 
     // Check if input file name is provided
     if (inputFile.empty() || inputFile == "") {
-        std::cerr << "Error: Input file not provided." << std::endl; 
+        std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m Input file not provided." << std::endl; 
         exit(EXIT_FAILURE);
     }
 
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
     std::optional<NodeProg> prog = parser.parse_prog();
 
     if (!prog.has_value()) {
-        std::cerr << "Error: Invalid program" << std::endl;
+        std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m Invalid program" << std::endl;
         exit(EXIT_FAILURE);
     }
 
