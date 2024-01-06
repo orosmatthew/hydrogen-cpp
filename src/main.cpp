@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
     }
 
     // Check if input file name is provided
-    if (inputFile.empty() || inputFile == "") {
+    if (inputFile.empty()) {
         std::cerr << "\u001B[31m \033[1m Error:\u001B[37m \033[0m Input file not provided." << std::endl; 
         exit(EXIT_FAILURE);
     }
