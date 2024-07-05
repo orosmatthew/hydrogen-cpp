@@ -112,7 +112,8 @@ public:
 
     void error_expected(const std::string& msg) const
     {
-        std::cerr << "[Parse Error] Expected " << msg << " on line " << peek(-1).value().line << std::endl;
+        const Token tok = peek(-1).value();
+        std::cerr << "[Parse Error] Expected " << msg << " on line " << tok.line << " at column " << tok.col << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -161,7 +162,7 @@ public:
             else {
                 break;
             }
-            const auto [type, line, value] = consume();
+            const auto [type, line, col, value] = consume();
             const int next_min_prec = prec.value() + 1;
             auto expr_rhs = parse_expr(next_min_prec);
             if (!expr_rhs.has_value()) {
