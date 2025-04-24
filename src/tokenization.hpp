@@ -149,6 +149,9 @@ public:
                     if (peek().value() == '*' && peek(1).has_value() && peek(1).value() == '/') {
                         break;
                     }
+                    else if(peek().value() == '\n') {
+                        line_count++;
+                    }
                     consume();
                 }
                 if (peek().has_value()) {
@@ -189,6 +192,13 @@ public:
             else if (peek().value() == '/') {
                 consume();
                 tokens.push_back({ TokenType::fslash, line_count });
+                while (std::isspace(peek().value())) {
+                    consume();
+                }
+                if (peek().value() == '0') {
+                    std::cerr << "Divide by 0 at line "<<line_count << std::endl;
+                    exit(EXIT_FAILURE);
+                }
             }
             else if (peek().value() == '{') {
                 consume();
