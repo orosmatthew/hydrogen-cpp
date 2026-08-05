@@ -16,6 +16,16 @@ struct NodeTermIdent {
 
 struct NodeExpr;
 
+/* for expressions like -5 + 3 */
+struct NodeUnaryExprNeg {
+    NodeExpr* expr;
+};
+
+/* for expressions like +4 - 3*/
+struct NodeUnaryExprPos {
+    NodeExpr *expr;
+};
+
 struct NodeTermParen {
     NodeExpr* expr;
 };
@@ -44,12 +54,16 @@ struct NodeBinExpr {
     std::variant<NodeBinExprAdd*, NodeBinExprMulti*, NodeBinExprSub*, NodeBinExprDiv*> var;
 };
 
+struct NodeUnaryExpr {
+    std::variant<NodeUnaryExprNeg*, NodeUnaryExprPos*> var;
+};
+
 struct NodeTerm {
     std::variant<NodeTermIntLit*, NodeTermIdent*, NodeTermParen*> var;
 };
 
 struct NodeExpr {
-    std::variant<NodeTerm*, NodeBinExpr*> var;
+    std::variant<NodeTerm*, NodeBinExpr*, NodeUnaryExpr*> var;
 };
 
 struct NodeStmtExit {
@@ -141,14 +155,57 @@ public:
         return {};
     }
 
+    std::optional<NodeExpr*> parse_unary()
+    {
+        if (auto minus = try_consume(TokenType::minus)) {
+            auto operand = parse_unary();
+            if (!operand)
+                error_expected("expression");
+
+            auto unary = m_allocator.emplace<NodeUnaryExpr>();
+
+            auto neg = m_allocator.emplace<NodeUnaryExprNeg>(
+                operand.value()
+            );
+
+            unary->var = neg;
+
+            return m_allocator.emplace<NodeExpr>(unary);
+        }
+
+        if (auto plus = try_consume(TokenType::plus)) {
+            auto operand = parse_unary();
+
+            if (!operand)
+                error_expected("expression");
+
+            auto unary = m_allocator.emplace<NodeUnaryExpr>();
+
+            auto pos = m_allocator.emplace<NodeUnaryExprPos>(
+                operand.value()
+            );
+
+            unary->var = pos;
+
+            return m_allocator.emplace<NodeExpr>(unary);
+        }
+
+        auto term = parse_term();
+
+        if (!term)
+            return {};
+
+        return m_allocator.emplace<NodeExpr>(term.value());
+    }
+
     std::optional<NodeExpr*> parse_expr(const int min_prec = 0) // NOLINT(*-no-recursion)
     {
-        std::optional<NodeTerm*> term_lhs = parse_term();
-        if (!term_lhs.has_value()) {
+        auto expr_lhs_temp = parse_unary();
+        if (!expr_lhs_temp.has_value()) {
             return {};
         }
-        auto expr_lhs = m_allocator.emplace<NodeExpr>(term_lhs.value());
 
+        NodeExpr *expr_lhs = expr_lhs_temp.value();
         while (true) {
             std::optional<Token> curr_tok = peek();
             std::optional<int> prec;

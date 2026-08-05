@@ -110,6 +110,23 @@ public:
             {
                 gen.gen_bin_expr(bin_expr);
             }
+
+            void operator()(const NodeUnaryExpr* unary) const
+            {
+                std::visit([&](auto&& node) {
+                    using T = std::decay_t<decltype(node)>;
+                    if constexpr (std::is_same_v<T, NodeUnaryExprNeg*>) {
+                        gen.gen_expr(node->expr);
+                        gen.pop("rax");
+                        gen.m_output << "    neg rax\n";
+                        gen.push("rax");
+                    } else if constexpr (std::is_same_v<T, NodeUnaryExprPos*>) {
+                        gen.gen_expr(node->expr);
+                    }
+                }, unary->var 
+                );
+            }
+
         };
 
         ExprVisitor visitor { .gen = *this };
